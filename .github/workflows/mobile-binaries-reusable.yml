@@ -75,7 +75,6 @@ jobs:
       - uses: actions/checkout@v5
         with:
           submodules: recursive
-          submodules: recursive
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -123,7 +122,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: recursive
           submodules: recursive
       - uses: ./.github/actions/mobile-android-setup
       - name: build apk + aab
@@ -194,7 +192,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: recursive
           submodules: recursive
       - name: check ios project
         id: check_ios

@@ -30,7 +30,6 @@ jobs:
       - uses: actions/checkout@v5
         with:
           submodules: recursive
-          submodules: recursive
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -70,7 +69,6 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          submodules: recursive
           submodules: recursive
       # Android toolchain (Java/SDK), Ruby + bundler, and npm deps — the same
       # setup the Play binary build uses.
