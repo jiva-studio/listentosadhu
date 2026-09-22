@@ -77,6 +77,9 @@ jobs:
           # Absent (forks / PRs without the secret) → plugin is skipped, build
           # unchanged. Org/project default in vite.config (jiva-studio/shruti).
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          APP_NAME: ${{ vars.APP_NAME || 'lectorium' }}
+          CDN_URL: ${{ vars.CDN_URL || 'https://akds-lectorium.b-cdn.net/{path}' }}
+          WEB_APP_BASE_URL: ${{ vars.WEB_APP_BASE_URL || 'https://listentosadhu.app' }}
         run: cd shruti/modules/apps/mobile && npm run build
       - uses: actions/upload-artifact@v7
         with:
