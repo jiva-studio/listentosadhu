@@ -37,6 +37,7 @@ jobs:
       plugins: '["audio-player","media-downloader"]'
       app_id: ${{ vars.APP_ID || 'studio.akdasa.lectorium' }}
       apple_provisioning_profile_name: ${{ vars.APPLE_PROVISIONING_PROFILE_NAME || 'Lectorium Distribution' }}
+      app_version: ${{ vars.APP_VERSION || '1.4.0' }}
     # Explicit mapping: this app's iOS cert is stored as SHRUTI_APPLE_CERTIFICATES
     # but kit's reusable workflow expects the generic APPLE_CERTIFICATES.
     secrets:

@@ -35,6 +35,10 @@ on:
         description: "iOS provisioning profile name (default Lectorium Distribution)"
         type: string
         default: "Lectorium Distribution"
+      app_version:
+        description: "Marketing version string (default 1.4.0)"
+        type: string
+        default: "1.4.0"
     # Generic secret contract — kit hosts NO project-specific names. Each app's
     # wrapper maps its own secrets onto these (e.g. APPLE_CERTIFICATES <-
     # SHLOKAS_APPLE_CERTIFICATES). Callers using `secrets: inherit` also work
@@ -116,6 +120,8 @@ jobs:
           APPLICATION_ID: ${{ inputs.app_id }}
           ANDROID_PACKAGE_NAME: ${{ inputs.app_id }}
           IOS_BUNDLE_ID: ${{ inputs.app_id }}
+          APP_VERSION: ${{ inputs.app_version }}
+          MOBILE_VERSION: ${{ inputs.app_version }}
         run: cd shruti/modules/apps/mobile && npm run build
       - uses: actions/upload-artifact@v5
         with:
@@ -145,6 +151,8 @@ jobs:
           APP_ID: ${{ inputs.app_id }}
           APPLICATION_ID: ${{ inputs.app_id }}
           ANDROID_PACKAGE_NAME: ${{ inputs.app_id }}
+          APP_VERSION: ${{ inputs.app_version }}
+          MOBILE_VERSION: ${{ inputs.app_version }}
         run: cd shruti/modules/apps/mobile && bundle exec fastlane android build_all
       - uses: actions/upload-artifact@v5
         with:
@@ -195,6 +203,8 @@ jobs:
           APP_ID: ${{ inputs.app_id }}
           APPLICATION_ID: ${{ inputs.app_id }}
           ANDROID_PACKAGE_NAME: ${{ inputs.app_id }}
+          APP_VERSION: ${{ inputs.app_version }}
+          MOBILE_VERSION: ${{ inputs.app_version }}
         run: cd shruti/modules/apps/mobile && bundle exec fastlane android upload aab:/tmp/aab/app-release.aab track:${{ inputs.track }}
 
   # ------------------------------------------------------------------------ #
@@ -235,6 +245,8 @@ jobs:
           APP_ID: ${{ inputs.app_id }}
           IOS_BUNDLE_ID: ${{ inputs.app_id }}
           APPLE_PROVISIONING_PROFILE_NAME: ${{ inputs.apple_provisioning_profile_name }}
+          APP_VERSION: ${{ inputs.app_version }}
+          MOBILE_VERSION: ${{ inputs.app_version }}
         run: cd shruti/modules/apps/mobile && bundle exec fastlane ios build
       - if: steps.check_ios.outputs.present == 'true'
         uses: actions/upload-artifact@v5
@@ -279,6 +291,8 @@ jobs:
           APPLE_STORE_CONNECT_API_KEY_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_API_KEY_ISSUER }}
           APP_ID: ${{ inputs.app_id }}
           IOS_BUNDLE_ID: ${{ inputs.app_id }}
+          APP_VERSION: ${{ inputs.app_version }}
+          MOBILE_VERSION: ${{ inputs.app_version }}
           # Org-level secrets at jiva-studio/ (visibility: all) — shared with shlokas.
           BETA_FEEDBACK_EMAIL: ${{ secrets.BETA_FEEDBACK_EMAIL }}
           BETA_CONTACT_FIRST_NAME: ${{ secrets.BETA_CONTACT_FIRST_NAME }}
