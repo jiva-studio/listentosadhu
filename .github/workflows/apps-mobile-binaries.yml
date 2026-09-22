@@ -34,11 +34,9 @@ jobs:
       platform: ${{ inputs.platform }}
       action: build-and-deploy
       track: ${{ inputs.track }}
-      # In-house Capacitor plugins: built (npm ci && npm run build) before the
-      # app's npm ci so vue-tsc resolves their dist/ type declarations.
       plugins: '["audio-player","media-downloader"]'
-      app_id: "studio.akdasa.lectorium"
-      apple_provisioning_profile_name: "Lectorium Distribution"
+      app_id: ${{ vars.APP_ID || 'studio.akdasa.lectorium' }}
+      apple_provisioning_profile_name: ${{ vars.APPLE_PROVISIONING_PROFILE_NAME || 'Lectorium Distribution' }}
     # Explicit mapping: this app's iOS cert is stored as SHRUTI_APPLE_CERTIFICATES
     # but kit's reusable workflow expects the generic APPLE_CERTIFICATES.
     secrets:
