@@ -93,6 +93,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.GOOGLE_PLAY_KEY_PASSWORD }}
         run: cd shruti/modules/apps/mobile && bundle exec fastlane android build_release
       - name: publish APK to Bunny Edge Storage
+        if: env.BUNNY_STORAGE_KEY != ''
         # public/ is the anonymously-readable prefix; the website's "Download
         # APK" link points at the Bunny CDN object below. The Bunny pull zone
         # serves directly from this storage zone (EU/US edge).
@@ -116,6 +117,7 @@ jobs:
           echo "Published: https://cdn.shruti.local/public/app/shruti.apk"
       # Keep a copy on the run too, for QA / rollback.
       - uses: actions/upload-artifact@v7
+        if: always()
         with:
           name: offstore-apk
           path: shruti/modules/apps/mobile/android/app/build/outputs/apk/release/app-release.apk
