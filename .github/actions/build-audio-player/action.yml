@@ -8,7 +8,7 @@ runs:
   using: composite
   steps:
     - shell: bash
-      run: cd modules/plugins/audio-player && npm ci
+      run: cd shruti/modules/plugins/audio-player && npm ci
 
     - shell: bash
-      run: cd modules/plugins/audio-player && npm run build
+      run: cd shruti/modules/plugins/audio-player && npm run build

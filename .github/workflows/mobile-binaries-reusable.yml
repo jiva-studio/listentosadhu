@@ -24,7 +24,7 @@ on:
         type: string
         default: internal
       plugins:
-        description: 'JSON array of modules/plugins/* dirs to build before npm ci (e.g. ["audio-player"])'
+        description: 'JSON array of shruti/modules/plugins/* dirs to build before npm ci (e.g. ["audio-player"])'
         type: string
         default: "[]"
     # Generic secret contract — kit hosts NO project-specific names. Each app's
@@ -79,17 +79,17 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: modules/apps/mobile/package-lock.json
+          cache-dependency-path: shruti/modules/apps/mobile/package-lock.json
       - name: build local plugins
         if: inputs.plugins != '[]'
         shell: bash
         run: |
           echo '${{ inputs.plugins }}' | jq -r '.[]' | while read -r p; do
             echo "::group::build plugin $p"
-            ( cd "modules/plugins/$p" && npm ci && npm run build )
+            ( cd "shruti/modules/plugins/$p" && npm ci && npm run build )
             echo "::endgroup::"
           done
-      - run: cd modules/apps/mobile && npm ci --prefer-offline --no-audit
+      - run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
       - name: build web bundle
         env:
           BUILD_ID: ${{ github.run_number }}
@@ -104,11 +104,11 @@ jobs:
           # Forwarded to the app build for source-map upload (see secret above).
           # Empty when the caller doesn't set it → upload is skipped.
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: cd modules/apps/mobile && npm run build
+        run: cd shruti/modules/apps/mobile && npm run build
       - uses: actions/upload-artifact@v5
         with:
           name: mobile-web-dist
-          path: modules/apps/mobile/dist
+          path: shruti/modules/apps/mobile/dist
           retention-days: 3
 
   # ------------------------------------------------------------------------ #
@@ -130,16 +130,16 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.GOOGLE_PLAY_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.GOOGLE_PLAY_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.GOOGLE_PLAY_KEY_PASSWORD }}
-        run: cd modules/apps/mobile && bundle exec fastlane android build_all
+        run: cd shruti/modules/apps/mobile && bundle exec fastlane android build_all
       - uses: actions/upload-artifact@v5
         with:
           name: app-debug
-          path: modules/apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
+          path: shruti/modules/apps/mobile/android/app/build/outputs/apk/debug/app-debug.apk
           retention-days: 14
       - uses: actions/upload-artifact@v5
         with:
           name: app-release-aab
-          path: modules/apps/mobile/android/app/build/outputs/bundle/release/app-release.aab
+          path: shruti/modules/apps/mobile/android/app/build/outputs/bundle/release/app-release.aab
           retention-days: 14
 
   deploy-android:
@@ -160,9 +160,9 @@ jobs:
         with:
           ruby-version: "3.3"
           bundler-cache: true
-          working-directory: modules/apps/mobile
+          working-directory: shruti/modules/apps/mobile
       - shell: bash
-        run: cd modules/apps/mobile && bundle install --jobs 4 --retry 3
+        run: cd shruti/modules/apps/mobile && bundle install --jobs 4 --retry 3
       - uses: actions/download-artifact@v5
         with:
           name: app-release-aab
@@ -177,7 +177,7 @@ jobs:
           # marketing-style "What's new" text.
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: cd modules/apps/mobile && bundle exec fastlane android upload aab:/tmp/aab/app-release.aab track:${{ inputs.track }}
+        run: cd shruti/modules/apps/mobile && bundle exec fastlane android upload aab:/tmp/aab/app-release.aab track:${{ inputs.track }}
 
   # ------------------------------------------------------------------------ #
   # iOS — build signed IPA, upload to TestFlight on deploy.
@@ -197,11 +197,11 @@ jobs:
         id: check_ios
         shell: bash
         run: |
-          if [ -d "modules/apps/mobile/ios/App" ]; then
+          if [ -d "shruti/modules/apps/mobile/ios/App" ]; then
             echo "present=true" >> "$GITHUB_OUTPUT"
           else
             echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::modules/apps/mobile/ios/ not present yet — run 'npx cap add ios' on a Mac and commit the project. Skipping iOS build."
+            echo "::notice::shruti/modules/apps/mobile/ios/ not present yet — run 'npx cap add ios' on a Mac and commit the project. Skipping iOS build."
           fi
       - if: steps.check_ios.outputs.present == 'true'
         uses: ./.github/actions/mobile-ios-setup
@@ -214,12 +214,12 @@ jobs:
           APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
           APPLE_STORE_CONNECT_API_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_API_KEY_ID }}
           APPLE_STORE_CONNECT_API_KEY_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_API_KEY_ISSUER }}
-        run: cd modules/apps/mobile && bundle exec fastlane ios build
+        run: cd shruti/modules/apps/mobile && bundle exec fastlane ios build
       - if: steps.check_ios.outputs.present == 'true'
         uses: actions/upload-artifact@v5
         with:
           name: app-release-ipa
-          path: modules/apps/mobile/ios/App/build/App.ipa
+          path: shruti/modules/apps/mobile/ios/App/build/App.ipa
           retention-days: 14
 
   deploy-ios:
@@ -249,7 +249,7 @@ jobs:
         with:
           ruby-version: "3.3"
           bundler-cache: true
-          working-directory: modules/apps/mobile
+          working-directory: shruti/modules/apps/mobile
       - name: upload ipa to testflight
         if: steps.check_ipa.outcome == 'success'
         env:
@@ -263,4 +263,4 @@ jobs:
           BETA_CONTACT_PHONE_NUMBER: ${{ secrets.BETA_CONTACT_PHONE_NUMBER }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: cd modules/apps/mobile && bundle exec fastlane ios upload ipa:/tmp/ipa/App.ipa
+        run: cd shruti/modules/apps/mobile && bundle exec fastlane ios upload ipa:/tmp/ipa/App.ipa

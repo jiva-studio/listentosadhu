@@ -7,7 +7,7 @@ description: >
   setup-java, bundler via ruby/setup-ruby) so cold ephemeral runners stay fast.
 
   Paths inside the steps are relative to the repository root
-  (modules/apps/mobile/...).
+  (shruti/modules/apps/mobile/...).
 
 runs:
   using: composite
@@ -16,7 +16,7 @@ runs:
       with:
         node-version: 24
         cache: npm
-        cache-dependency-path: modules/apps/mobile/package-lock.json
+        cache-dependency-path: shruti/modules/apps/mobile/package-lock.json
 
     - uses: actions/setup-java@v4
       with:
@@ -26,7 +26,7 @@ runs:
 
     - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
       with:
-        # Pin only what AAB build needs (per modules/apps/mobile/android/variables.gradle:
+        # Pin only what AAB build needs (per shruti/modules/apps/mobile/android/variables.gradle:
         # compileSdk=36, AGP 8.13.2 → build-tools 36). Skipping the action's
         # default `tools` (legacy SDK tools) and not requesting `emulator` /
         # `system-images;*` cuts ~500 MB off setup time on each cold runner.
@@ -36,12 +36,12 @@ runs:
       with:
         ruby-version: "3.3"
         bundler-cache: true
-        working-directory: modules/apps/mobile
+        working-directory: shruti/modules/apps/mobile
 
     - shell: bash
-      run: cd modules/apps/mobile && npm ci --prefer-offline --no-audit
+      run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
 
     - uses: actions/download-artifact@v5
       with:
         name: mobile-web-dist
-        path: modules/apps/mobile/dist
+        path: shruti/modules/apps/mobile/dist

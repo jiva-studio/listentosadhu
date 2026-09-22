@@ -1,13 +1,13 @@
 name: Mobile / Store listing
 
 # Manual-only: capture store screenshots from the Vite dev server via the
-# Playwright pipeline in `modules/tools/screenshots/`. With `deploy=true` it
+# Playwright pipeline in `shruti/modules/tools/screenshots/`. With `deploy=true` it
 # updates the chosen store(s) end to end — uploading both the framed
 # screenshots and the listing copy (titles/descriptions) from
 # fastlane/metadata/, for every locale in the registry. The upload is gated:
 # it stages an edit but never submits for review; you confirm in the console.
 #
-# Locales come from the store registry (modules/apps/mobile/store-locales.json):
+# Locales come from the store registry (shruti/modules/apps/mobile/store-locales.json):
 # leave `locales` empty to run every configured locale.
 #
 # Triggered from the Actions tab → "mobile / screenshots" → "Run workflow".
@@ -84,7 +84,7 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: modules/apps/mobile/package-lock.json
+          cache-dependency-path: shruti/modules/apps/mobile/package-lock.json
 
       # The mobile app's package.json depends on two in-house Capacitor
       # plugins via `file:` paths. Their dist/ is gitignored, so vite's
@@ -99,33 +99,33 @@ jobs:
         with:
           ruby-version: '3.3'
           bundler-cache: true
-          working-directory: modules/apps/mobile
+          working-directory: shruti/modules/apps/mobile
 
       - name: bundle install
-        run: cd modules/apps/mobile && bundle install --jobs 4 --retry 3
+        run: cd shruti/modules/apps/mobile && bundle install --jobs 4 --retry 3
 
       - name: install mobile app deps
-        run: cd modules/apps/mobile && npm ci --prefer-offline --no-audit
+        run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
 
       - name: install screenshots tool deps
-        run: cd modules/tools/screenshots && npm install --no-audit --no-fund
+        run: cd shruti/modules/tools/screenshots && npm install --no-audit --no-fund
 
       - name: install playwright chromium
-        run: cd modules/tools/screenshots && npx playwright install chromium
+        run: cd shruti/modules/tools/screenshots && npx playwright install chromium
 
       # Pull the latest published content DB matching the supported scheme.
-      # `db-sync.sh e2e` writes it to tests/e2e/mobile/fixtures/public/db/,
+      # `db-sync.sh e2e` writes it to shruti/tests/e2e/mobile/fixtures/public/db/,
       # which the screenshots tool consumes from fixtures/content.db.
       - name: sync content DB from S3
-        run: bash modules/db-sync.sh e2e
+        run: bash shruti/modules/db-sync.sh e2e
 
       - name: stage content.db for screenshots tool
         run: |
           set -euo pipefail
-          src=$(ls -t tests/e2e/mobile/fixtures/public/db/shruti.*.db | head -1)
-          mkdir -p modules/tools/screenshots/fixtures
-          cp "$src" modules/tools/screenshots/fixtures/content.db
-          echo "Staged $src → modules/tools/screenshots/fixtures/content.db"
+          src=$(ls -t shruti/tests/e2e/mobile/fixtures/public/db/shruti.*.db | head -1)
+          mkdir -p shruti/modules/tools/screenshots/fixtures
+          cp "$src" shruti/modules/tools/screenshots/fixtures/content.db
+          echo "Staged $src → shruti/modules/tools/screenshots/fixtures/content.db"
 
       - name: run fastlane ${{ matrix.platform }} screenshots
         env:
@@ -158,7 +158,7 @@ jobs:
           if [ -n "$LOCALES" ]; then ARGS+=("locales:$LOCALES"); fi
           if [ "$DEPLOY" != "true" ]; then ARGS+=("skip_upload:true"); fi
           if [ "$DRY_RUN" = "true" ]; then ARGS+=("dry_run:true"); fi
-          cd modules/apps/mobile && bundle exec fastlane "$PLATFORM" screenshots "${ARGS[@]}"
+          cd shruti/modules/apps/mobile && bundle exec fastlane "$PLATFORM" screenshots "${ARGS[@]}"
 
       # Same deploy run also pushes the listing copy (titles/descriptions) so a
       # single "deploy" updates everything. Gated lane — stages, never submits.
@@ -176,12 +176,12 @@ jobs:
           ARGS=()
           # Only the android metadata lane takes dry_run (supply validate-only).
           if [ "$DRY_RUN" = "true" ] && [ "$PLATFORM" = "android" ]; then ARGS+=("dry_run:true"); fi
-          cd modules/apps/mobile && bundle exec fastlane "$PLATFORM" metadata "${ARGS[@]}"
+          cd shruti/modules/apps/mobile && bundle exec fastlane "$PLATFORM" metadata "${ARGS[@]}"
 
       - name: upload framed PNGs as artifact
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: store-screenshots-${{ matrix.platform }}
-          path: modules/tools/screenshots/out/framed/
+          path: shruti/modules/tools/screenshots/out/framed/
           retention-days: 14

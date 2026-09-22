@@ -4,7 +4,7 @@ description: >
   Shared setup for any job that runs Fastlane / xcodebuild in the mobile iOS project.
 
   Paths inside the steps are relative to the repository root
-  (modules/apps/mobile/...).
+  (shruti/modules/apps/mobile/...).
 
 # Xcode version pin. Capacitor 8 requires Xcode 26+ (ionic-team/capacitor#8290).
 # Apple advances the App Store minimum ~yearly; check
@@ -26,26 +26,26 @@ runs:
       with:
         node-version: 24
         cache: npm
-        cache-dependency-path: modules/apps/mobile/package-lock.json
+        cache-dependency-path: shruti/modules/apps/mobile/package-lock.json
 
     - uses: ruby/setup-ruby@a0102e0972be65f351c307e2d64b9314a57c8073 # v1
       with:
         ruby-version: "3.3"
         bundler-cache: true
-        working-directory: modules/apps/mobile
+        working-directory: shruti/modules/apps/mobile
 
     - shell: bash
-      run: cd modules/apps/mobile && npm ci
+      run: cd shruti/modules/apps/mobile && npm ci
 
     - uses: actions/download-artifact@v5
       with:
         name: mobile-web-dist
-        path: modules/apps/mobile/dist
+        path: shruti/modules/apps/mobile/dist
 
     - uses: actions/cache@v4
       with:
         path: |
           ~/.cocoapods
-          modules/apps/mobile/ios/App/Pods
-        key: ${{ runner.os }}-pods-${{ hashFiles('modules/apps/mobile/ios/App/Podfile.lock') }}
+          shruti/modules/apps/mobile/ios/App/Pods
+        key: ${{ runner.os }}-pods-${{ hashFiles('shruti/modules/apps/mobile/ios/App/Podfile.lock') }}
         restore-keys: ${{ runner.os }}-pods-

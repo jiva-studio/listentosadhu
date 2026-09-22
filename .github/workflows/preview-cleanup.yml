@@ -5,10 +5,10 @@ on:
     branches: [main]
     types: [closed]
     paths:
-      - modules/apps/mobile/**
-      - modules/plugins/**
-      - modules/libs/**
-      - tests/e2e/mobile/**
+      - shruti/modules/apps/mobile/**
+      - shruti/modules/plugins/**
+      - shruti/modules/libs/**
+      - shruti/tests/e2e/mobile/**
       - .github/workflows/apps-mobile.yml
       - .github/workflows/preview-cleanup.yml
 

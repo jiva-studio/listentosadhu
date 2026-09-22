@@ -8,7 +8,7 @@ runs:
   using: composite
   steps:
     - shell: bash
-      run: cd modules/plugins/media-downloader && npm ci
+      run: cd shruti/modules/plugins/media-downloader && npm ci
 
     - shell: bash
-      run: cd modules/plugins/media-downloader && npm run build
+      run: cd shruti/modules/plugins/media-downloader && npm run build

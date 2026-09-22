@@ -12,16 +12,16 @@ name: Mobile / Checks
 on:
   pull_request:
     paths:
-      - 'modules/apps/mobile/**'
-      - 'modules/libs/**'
-      - 'modules/plugins/**'
+      - 'shruti/modules/apps/mobile/**'
+      - 'shruti/modules/libs/**'
+      - 'shruti/modules/plugins/**'
       - '.github/workflows/apps-mobile-checks.yml'
   push:
     branches: [main]
     paths:
-      - 'modules/apps/mobile/**'
-      - 'modules/libs/**'
-      - 'modules/plugins/**'
+      - 'shruti/modules/apps/mobile/**'
+      - 'shruti/modules/libs/**'
+      - 'shruti/modules/plugins/**'
       - '.github/workflows/apps-mobile-checks.yml'
 
 concurrency:
@@ -43,7 +43,7 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: modules/apps/mobile/package-lock.json
+          cache-dependency-path: shruti/modules/apps/mobile/package-lock.json
 
       # `vitest.config.ts` resolves both in-house plugins to their built ESM
       # entry, not their package directory, so an unbuilt plugin is a failed
@@ -51,10 +51,10 @@ jobs:
       - uses: ./.github/actions/build-audio-player
       - uses: ./.github/actions/build-media-downloader
 
-      - run: cd modules/apps/mobile && npm ci --prefer-offline --no-audit
+      - run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
 
       - name: lint
-        run: cd modules/apps/mobile && npm run lint
+        run: cd shruti/modules/apps/mobile && npm run lint
 
       - name: unit tests
-        run: cd modules/apps/mobile && npm run test
+        run: cd shruti/modules/apps/mobile && npm run test

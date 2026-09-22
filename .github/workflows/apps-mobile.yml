@@ -4,31 +4,31 @@ on:
   push:
     branches: [main]
     paths:
-      - modules/apps/mobile/**
-      - modules/plugins/**
-      - modules/libs/**
-      - tests/e2e/mobile/**
-      - modules/db-scheme.json
-      - modules/db-sync.sh
+      - shruti/modules/apps/mobile/**
+      - shruti/modules/plugins/**
+      - shruti/modules/libs/**
+      - shruti/tests/e2e/mobile/**
+      - shruti/modules/db-scheme.json
+      - shruti/modules/db-sync.sh
       - .github/workflows/apps-mobile.yml
       - .github/actions/build-audio-player/**
       - .github/actions/build-media-downloader/**
       - .gitmodules
-      - modules/kit/**
+      - shruti/modules/kit/**
   pull_request:
     branches: [main]
     paths:
-      - modules/apps/mobile/**
-      - modules/plugins/**
-      - modules/libs/**
-      - tests/e2e/mobile/**
-      - modules/db-scheme.json
-      - modules/db-sync.sh
+      - shruti/modules/apps/mobile/**
+      - shruti/modules/plugins/**
+      - shruti/modules/libs/**
+      - shruti/tests/e2e/mobile/**
+      - shruti/modules/db-scheme.json
+      - shruti/modules/db-sync.sh
       - .github/workflows/apps-mobile.yml
       - .github/actions/build-audio-player/**
       - .github/actions/build-media-downloader/**
       - .gitmodules
-      - modules/kit/**
+      - shruti/modules/kit/**
   workflow_dispatch:
 
 concurrency:
@@ -54,10 +54,10 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: modules/apps/mobile/package-lock.json
+          cache-dependency-path: shruti/modules/apps/mobile/package-lock.json
       - uses: ./.github/actions/build-audio-player
       - uses: ./.github/actions/build-media-downloader
-      - run: cd modules/apps/mobile && npm ci --prefer-offline --no-audit
+      - run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
       - name: build web bundle
         # Vite reads BUILD_ID via process.env and inlines it as __BUILD_ID__
         # (shown in Settings → About). Version comes from package.json.
@@ -77,11 +77,11 @@ jobs:
           # Absent (forks / PRs without the secret) → plugin is skipped, build
           # unchanged. Org/project default in vite.config (jiva-studio/shruti).
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: cd modules/apps/mobile && npm run build
+        run: cd shruti/modules/apps/mobile && npm run build
       - uses: actions/upload-artifact@v7
         with:
           name: mobile-web-dist
-          path: modules/apps/mobile/dist
+          path: shruti/modules/apps/mobile/dist
           retention-days: 3
 
   # The workflow-level `paths:` filter also fires on e2e / libs / db-scheme
@@ -104,9 +104,9 @@ jobs:
         with:
           filters: |
             native:
-              - 'modules/plugins/*/android/**'
-              - 'modules/apps/mobile/android/**'
-              - 'modules/apps/mobile/package-lock.json'
+              - 'shruti/modules/plugins/*/android/**'
+              - 'shruti/modules/apps/mobile/android/**'
+              - 'shruti/modules/apps/mobile/package-lock.json'
               - '.github/workflows/apps-mobile.yml'
 
   # The whole Android native lane: compile the app module, run the plugin unit
@@ -139,7 +139,7 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: modules/apps/mobile/package-lock.json
+          cache-dependency-path: shruti/modules/apps/mobile/package-lock.json
       - uses: actions/setup-java@v4
         with:
           distribution: zulu
@@ -147,14 +147,14 @@ jobs:
           cache: gradle
       - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407 # v3
         # Same pin as kit's mobile-android-setup: compileSdk 36 per
-        # modules/apps/mobile/android/variables.gradle. No emulator/system
+        # shruti/modules/apps/mobile/android/variables.gradle. No emulator/system
         # images — lint runs nothing, and the unit tests are plain JVM tests
         # (testDebugUnitTest, not androidTest/connectedCheck).
         with:
           packages: platform-tools platforms;android-36 build-tools;36.0.0
       - uses: ./.github/actions/build-audio-player
       - uses: ./.github/actions/build-media-downloader
-      - run: cd modules/apps/mobile && npm ci --prefer-offline --no-audit
+      - run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
       # The plugins are not standalone Gradle builds — they are included by the
       # app project via capacitor.settings.gradle. `cap update` regenerates the
       # gitignored capacitor-cordova-android-plugins module that app/build.gradle
@@ -169,7 +169,7 @@ jobs:
         # mobile-web-dist artifact, which would serialise this lane behind
         # build-web for no extra coverage.
         run: |
-          cd modules/apps/mobile
+          cd shruti/modules/apps/mobile
           mkdir -p dist android/app/src/main/assets
           [ -f dist/index.html ] || echo '<!doctype html>' > dist/index.html
           npx cap sync android
@@ -180,7 +180,7 @@ jobs:
         # source file in the module (plus the plugin modules it depends on)
         # without paying for packaging, dexing and signing.
         run: |
-          cd modules/apps/mobile/android
+          cd shruti/modules/apps/mobile/android
           ./gradlew --no-daemon :app:compileDebugJavaWithJavac
       - name: run native unit tests
         # --continue for the same reason as lint below: one run reports every
@@ -189,7 +189,7 @@ jobs:
         # named anyway so tests added there are picked up without a CI edit.
         # The guard below is what keeps that from being silently vacuous.
         run: |
-          cd modules/apps/mobile/android
+          cd shruti/modules/apps/mobile/android
           ./gradlew --no-daemon --continue \
             :shruti-plugin-audio-player:testDebugUnitTest \
             :shruti-plugin-media-downloader:testDebugUnitTest
@@ -202,7 +202,7 @@ jobs:
           set -u
           total=0
           for module in audio-player media-downloader; do
-            dir="modules/plugins/$module/android/build/test-results/testDebugUnitTest"
+            dir="shruti/modules/plugins/$module/android/build/test-results/testDebugUnitTest"
             count=$(grep -ho 'tests="[0-9]*"' "$dir"/*.xml 2>/dev/null \
               | grep -o '[0-9]*' | awk '{ s += $1 } END { print s + 0 }')
             count=${count:-0}
@@ -218,7 +218,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: android-unit-test-reports
-          path: modules/plugins/*/android/build/reports/tests/**
+          path: shruti/modules/plugins/*/android/build/reports/shruti/tests/**
           retention-days: 7
           if-no-files-found: ignore
       - name: lint native plugin modules
@@ -227,7 +227,7 @@ jobs:
         # --continue so a failure in the first module still lints the second:
         # one run reports every offender instead of one per push.
         run: |
-          cd modules/apps/mobile/android
+          cd shruti/modules/apps/mobile/android
           ./gradlew --no-daemon --continue \
             :shruti-plugin-audio-player:lintRelease \
             :shruti-plugin-media-downloader:lintRelease
@@ -239,7 +239,7 @@ jobs:
           set -u
           fail=0
           for module in audio-player media-downloader; do
-            dir="modules/plugins/$module/android/build/reports"
+            dir="shruti/modules/plugins/$module/android/build/reports"
             reports=$(find "$dir" -name 'lint-results*.xml' 2>/dev/null || true)
             if [ -z "$reports" ]; then
               echo "::error::no lint report under $dir — did lintRelease run?"
@@ -260,7 +260,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: android-lint-reports
-          path: modules/plugins/*/android/build/reports/lint-results*
+          path: shruti/modules/plugins/*/android/build/reports/lint-results*
           retention-days: 7
           if-no-files-found: ignore
 
@@ -292,7 +292,7 @@ jobs:
     with:
       pages_project: shruti-preview
       plugins: '["audio-player", "media-downloader"]'
-      # Our Playwright suite is at tests/e2e/mobile, not the path the reusable
+      # Our Playwright suite is at shruti/tests/e2e/mobile, not the path the reusable
       # job probes, so it was reporting a green check having run nothing. It is
       # also a ~15-minute browser suite: worth running deliberately (the `e2e
       # (manual)` workflow) rather than on every push.

@@ -13,7 +13,7 @@ name: mobile / ci (reusable)
 #
 # Local `uses: ./...` would resolve against kit, so app-local plugin builds are
 # parametrized generically via the `plugins` input (a JSON array of
-# modules/plugins/* dirs to `npm ci && npm run build` before the app's npm ci).
+# shruti/modules/plugins/* dirs to `npm ci && npm run build` before the app's npm ci).
 
 on:
   workflow_call:
@@ -23,7 +23,7 @@ on:
         type: string
         required: true
       plugins:
-        description: 'JSON array of modules/plugins/* dirs to build before npm ci (e.g. ["audio-player"])'
+        description: 'JSON array of shruti/modules/plugins/* dirs to build before npm ci (e.g. ["audio-player"])'
         type: string
         default: "[]"
       run_e2e:
@@ -53,18 +53,18 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: modules/apps/mobile/package-lock.json
+          cache-dependency-path: shruti/modules/apps/mobile/package-lock.json
       - name: build local plugins
         if: inputs.plugins != '[]'
         shell: bash
         run: |
           echo '${{ inputs.plugins }}' | jq -r '.[]' | while read -r p; do
             echo "::group::build plugin $p"
-            ( cd "modules/plugins/$p" && npm ci && npm run build )
+            ( cd "shruti/modules/plugins/$p" && npm ci && npm run build )
             echo "::endgroup::"
           done
-      - run: cd modules/apps/mobile && npm ci --prefer-offline --no-audit
-      - run: cd modules/apps/mobile && npm run lint
+      - run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
+      - run: cd shruti/modules/apps/mobile && npm run lint
 
   test:
     name: test / unit
@@ -77,22 +77,22 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: modules/apps/mobile/package-lock.json
+          cache-dependency-path: shruti/modules/apps/mobile/package-lock.json
       - name: build local plugins
         if: inputs.plugins != '[]'
         shell: bash
         run: |
           echo '${{ inputs.plugins }}' | jq -r '.[]' | while read -r p; do
             echo "::group::build plugin $p"
-            ( cd "modules/plugins/$p" && npm ci && npm run build )
+            ( cd "shruti/modules/plugins/$p" && npm ci && npm run build )
             echo "::endgroup::"
           done
-      - run: cd modules/apps/mobile && npm ci --prefer-offline --no-audit
-      - run: cd modules/apps/mobile && npm test
+      - run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
+      - run: cd shruti/modules/apps/mobile && npm test
 
   # e2e runs the prebuilt dist (mobile-web-dist artifact uploaded by the
   # caller's build-web). No-ops cleanly until the
-  # app commits modules/tests/e2e/.
+  # app commits shruti/modules/shruti/tests/e2e/.
   e2e:
     name: test / e2e
     if: ${{ inputs.run_e2e }}
@@ -104,35 +104,35 @@ jobs:
       - name: detect e2e suite
         id: check_e2e
         run: |
-          if [ -f modules/tests/e2e/package-lock.json ]; then
+          if [ -f shruti/modules/shruti/tests/e2e/package-lock.json ]; then
             echo "present=true" >> "$GITHUB_OUTPUT"
           else
             echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::modules/tests/e2e/ not present yet — skipping Playwright."
+            echo "::notice::shruti/modules/shruti/tests/e2e/ not present yet — skipping Playwright."
           fi
       - if: steps.check_e2e.outputs.present == 'true'
         uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: modules/tests/e2e/package-lock.json
+          cache-dependency-path: shruti/modules/shruti/tests/e2e/package-lock.json
       - if: steps.check_e2e.outputs.present == 'true'
         uses: actions/download-artifact@v8
         with:
           name: mobile-web-dist
-          path: modules/apps/mobile/dist
+          path: shruti/modules/apps/mobile/dist
       - if: steps.check_e2e.outputs.present == 'true'
-        run: cd modules/tests/e2e && npm ci --prefer-offline --no-audit
+        run: cd shruti/modules/shruti/tests/e2e && npm ci --prefer-offline --no-audit
       - if: steps.check_e2e.outputs.present == 'true'
         uses: actions/cache@v4
         id: playwright-cache
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('modules/tests/e2e/package-lock.json') }}
+          key: playwright-${{ hashFiles('shruti/modules/shruti/tests/e2e/package-lock.json') }}
       - if: steps.check_e2e.outputs.present == 'true' && steps.playwright-cache.outputs.cache-hit != 'true'
-        run: cd modules/tests/e2e && npx playwright install --with-deps chromium
+        run: cd shruti/modules/shruti/tests/e2e && npx playwright install --with-deps chromium
       - if: steps.check_e2e.outputs.present == 'true' && steps.playwright-cache.outputs.cache-hit == 'true'
-        run: cd modules/tests/e2e && npx playwright install-deps chromium
+        run: cd shruti/modules/shruti/tests/e2e && npx playwright install-deps chromium
       - if: steps.check_e2e.outputs.present == 'true'
         name: pick e2e port
         run: echo "E2E_PORT=$((20000 + RANDOM % 40000))" >> "$GITHUB_ENV"
@@ -140,13 +140,13 @@ jobs:
         name: run playwright
         env:
           E2E_USE_BUNDLE: "1"
-        run: cd modules/tests/e2e && npx playwright test
+        run: cd shruti/modules/shruti/tests/e2e && npx playwright test
       - if: always() && steps.check_e2e.outputs.present == 'true'
         name: upload playwright report
         uses: actions/upload-artifact@v7
         with:
           name: e2e-playwright-report
-          path: modules/tests/e2e/playwright-report/
+          path: shruti/modules/shruti/tests/e2e/playwright-report/
           retention-days: 30
 
   # -------------------------------------------------------------------------- #

@@ -34,10 +34,10 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          cache-dependency-path: modules/apps/mobile/package-lock.json
+          cache-dependency-path: shruti/modules/apps/mobile/package-lock.json
       - uses: ./.github/actions/build-audio-player
       - uses: ./.github/actions/build-media-downloader
-      - run: cd modules/apps/mobile && npm ci --prefer-offline --no-audit
+      - run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
       - name: build off-store web bundle
         env:
           BUILD_ID: ${{ github.run_number }}
@@ -50,15 +50,15 @@ jobs:
           REVENUECAT_IOS_KEY: ""
           REVENUECAT_ANDROID_KEY: ""
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        run: cd modules/apps/mobile && npm run build
+        run: cd shruti/modules/apps/mobile && npm run build
       # Named mobile-web-dist (not offstore-*) because kit's
       # mobile-android-setup action downloads exactly that artifact name into
-      # modules/apps/mobile/dist. This run only ever produces the off-store
+      # shruti/modules/apps/mobile/dist. This run only ever produces the off-store
       # bundle, so reusing the name is safe and lets the setup action place it.
       - uses: actions/upload-artifact@v7
         with:
           name: mobile-web-dist
-          path: modules/apps/mobile/dist
+          path: shruti/modules/apps/mobile/dist
           retention-days: 3
 
   # Sign the release APK from the off-store bundle and publish it to S3.
@@ -73,7 +73,7 @@ jobs:
       # Android toolchain (Java/SDK), Ruby + bundler, and npm deps — the same
       # setup the Play binary build uses.
       # The setup action itself downloads the mobile-web-dist artifact into
-      # modules/apps/mobile/dist (so fastlane's before_all sees dist/index.html
+      # shruti/modules/apps/mobile/dist (so fastlane's before_all sees dist/index.html
       # and skips a rebuild — which would otherwise lack SHRUTI_OFFSTORE).
       - name: android toolchain + deps (+ web bundle)
         uses: ./.github/actions/mobile-android-setup
@@ -91,7 +91,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.GOOGLE_PLAY_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.GOOGLE_PLAY_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.GOOGLE_PLAY_KEY_PASSWORD }}
-        run: cd modules/apps/mobile && bundle exec fastlane android build_release
+        run: cd shruti/modules/apps/mobile && bundle exec fastlane android build_release
       - name: publish APK to Bunny Edge Storage
         # public/ is the anonymously-readable prefix; the website's "Download
         # APK" link points at the Bunny CDN object below. The Bunny pull zone
@@ -102,7 +102,7 @@ jobs:
           BUNNY_STORAGE_KEY: ${{ secrets.SHRUTI_BUNNY_STORAGE_KEY }}
           BUNNY_API_KEY: ${{ secrets.SHRUTI_BUNNY_NET_API }}
         run: |
-          APK="modules/apps/mobile/android/app/build/outputs/apk/release/app-release.apk"
+          APK="shruti/modules/apps/mobile/android/app/build/outputs/apk/release/app-release.apk"
           test -f "$APK" || { echo "::error::APK not found at $APK"; exit 1; }
           code=$(curl -s -o /dev/null -w '%{http_code}' --fail-with-body \
             -X PUT "https://storage.bunnycdn.com/shruti-engine-eu/public/app/shruti.apk" \
@@ -118,5 +118,5 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: offstore-apk
-          path: modules/apps/mobile/android/app/build/outputs/apk/release/app-release.apk
+          path: shruti/modules/apps/mobile/android/app/build/outputs/apk/release/app-release.apk
           retention-days: 14
