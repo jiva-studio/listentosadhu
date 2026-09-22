@@ -78,7 +78,9 @@ jobs:
         platform: ${{ fromJSON(needs.prepare.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v5
-
+        with:
+          submodules: recursive
+          submodules: recursive
       - uses: actions/setup-node@v5
         with:
           node-version: 24

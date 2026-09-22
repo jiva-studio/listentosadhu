@@ -73,6 +73,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          submodules: recursive
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -119,6 +122,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          submodules: recursive
       - uses: ./.github/actions/mobile-android-setup
       - name: build apk + aab
         env:
@@ -148,6 +154,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          submodules: recursive
           # Need full history + tags so release notes can diff against the
           # previous mobile-v* tag (otherwise we fall back to last 30 commits).
           fetch-depth: 0
@@ -186,6 +193,9 @@ jobs:
     runs-on: macos-26
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          submodules: recursive
       - name: check ios project
         id: check_ios
         shell: bash
@@ -228,6 +238,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          submodules: recursive
           fetch-depth: 0
       - name: check ipa artifact
         id: check_ipa

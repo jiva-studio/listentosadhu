@@ -47,6 +47,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          submodules: recursive
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -69,6 +72,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          submodules: recursive
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -95,6 +101,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          submodules: recursive
+          submodules: recursive
       - name: detect e2e suite
         id: check_e2e
         run: |
