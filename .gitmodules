@@ -1,0 +1,3 @@
+[submodule "shruti"]
+	path = shruti
+	url = git@github.com:jiva-studio/shruti.git
