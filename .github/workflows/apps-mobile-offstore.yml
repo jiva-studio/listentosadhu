@@ -91,6 +91,8 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.GOOGLE_PLAY_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.GOOGLE_PLAY_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.GOOGLE_PLAY_KEY_PASSWORD }}
+          APP_ID: studio.akdasa.lectorium
+          ANDROID_PACKAGE_NAME: studio.akdasa.lectorium
         run: cd shruti/modules/apps/mobile && bundle exec fastlane android build_release
       - name: publish APK to Bunny Edge Storage
         if: env.BUNNY_STORAGE_KEY != ''

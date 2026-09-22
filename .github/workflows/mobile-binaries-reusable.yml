@@ -27,6 +27,14 @@ on:
         description: 'JSON array of shruti/modules/plugins/* dirs to build before npm ci (e.g. ["audio-player"])'
         type: string
         default: "[]"
+      app_id:
+        description: "Application ID / iOS bundle identifier (default studio.akdasa.lectorium)"
+        type: string
+        default: "studio.akdasa.lectorium"
+      apple_provisioning_profile_name:
+        description: "iOS provisioning profile name (default Lectorium Distribution)"
+        type: string
+        default: "Lectorium Distribution"
     # Generic secret contract — kit hosts NO project-specific names. Each app's
     # wrapper maps its own secrets onto these (e.g. APPLE_CERTIFICATES <-
     # SHLOKAS_APPLE_CERTIFICATES). Callers using `secrets: inherit` also work
@@ -104,6 +112,10 @@ jobs:
           # Forwarded to the app build for source-map upload (see secret above).
           # Empty when the caller doesn't set it → upload is skipped.
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          APP_ID: ${{ inputs.app_id }}
+          APPLICATION_ID: ${{ inputs.app_id }}
+          ANDROID_PACKAGE_NAME: ${{ inputs.app_id }}
+          IOS_BUNDLE_ID: ${{ inputs.app_id }}
         run: cd shruti/modules/apps/mobile && npm run build
       - uses: actions/upload-artifact@v5
         with:
@@ -130,6 +142,9 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.GOOGLE_PLAY_KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.GOOGLE_PLAY_KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.GOOGLE_PLAY_KEY_PASSWORD }}
+          APP_ID: ${{ inputs.app_id }}
+          APPLICATION_ID: ${{ inputs.app_id }}
+          ANDROID_PACKAGE_NAME: ${{ inputs.app_id }}
         run: cd shruti/modules/apps/mobile && bundle exec fastlane android build_all
       - uses: actions/upload-artifact@v5
         with:
@@ -177,6 +192,9 @@ jobs:
           # marketing-style "What's new" text.
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          APP_ID: ${{ inputs.app_id }}
+          APPLICATION_ID: ${{ inputs.app_id }}
+          ANDROID_PACKAGE_NAME: ${{ inputs.app_id }}
         run: cd shruti/modules/apps/mobile && bundle exec fastlane android upload aab:/tmp/aab/app-release.aab track:${{ inputs.track }}
 
   # ------------------------------------------------------------------------ #
@@ -214,6 +232,9 @@ jobs:
           APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
           APPLE_STORE_CONNECT_API_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_API_KEY_ID }}
           APPLE_STORE_CONNECT_API_KEY_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_API_KEY_ISSUER }}
+          APP_ID: ${{ inputs.app_id }}
+          IOS_BUNDLE_ID: ${{ inputs.app_id }}
+          APPLE_PROVISIONING_PROFILE_NAME: ${{ inputs.apple_provisioning_profile_name }}
         run: cd shruti/modules/apps/mobile && bundle exec fastlane ios build
       - if: steps.check_ios.outputs.present == 'true'
         uses: actions/upload-artifact@v5
@@ -256,6 +277,8 @@ jobs:
           APPLE_STORE_CONNECT_API_KEY: ${{ secrets.APPLE_STORE_CONNECT_API_KEY }}
           APPLE_STORE_CONNECT_API_KEY_ID: ${{ secrets.APPLE_STORE_CONNECT_API_KEY_ID }}
           APPLE_STORE_CONNECT_API_KEY_ISSUER: ${{ secrets.APPLE_STORE_CONNECT_API_KEY_ISSUER }}
+          APP_ID: ${{ inputs.app_id }}
+          IOS_BUNDLE_ID: ${{ inputs.app_id }}
           # Org-level secrets at jiva-studio/ (visibility: all) — shared with shlokas.
           BETA_FEEDBACK_EMAIL: ${{ secrets.BETA_FEEDBACK_EMAIL }}
           BETA_CONTACT_FIRST_NAME: ${{ secrets.BETA_CONTACT_FIRST_NAME }}
