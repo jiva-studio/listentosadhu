@@ -98,6 +98,8 @@ jobs:
             echo "::endgroup::"
           done
       - run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
+      - name: apply branding overlay
+        run: ./scripts/apply-branding.sh
       - name: build web bundle
         env:
           BUILD_ID: ${{ github.run_number }}

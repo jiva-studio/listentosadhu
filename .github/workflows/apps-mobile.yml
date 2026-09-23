@@ -58,6 +58,8 @@ jobs:
       - uses: ./.github/actions/build-audio-player
       - uses: ./.github/actions/build-media-downloader
       - run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
+      - name: apply branding overlay
+        run: ./scripts/apply-branding.sh
       - name: build web bundle
         # Vite reads BUILD_ID via process.env and inlines it as __BUILD_ID__
         # (shown in Settings → About). Version comes from package.json.

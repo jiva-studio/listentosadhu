@@ -38,6 +38,8 @@ jobs:
       - uses: ./.github/actions/build-audio-player
       - uses: ./.github/actions/build-media-downloader
       - run: cd shruti/modules/apps/mobile && npm ci --prefer-offline --no-audit
+      - name: apply branding overlay
+        run: ./scripts/apply-branding.sh
       - name: build off-store web bundle
         env:
           BUILD_ID: ${{ github.run_number }}

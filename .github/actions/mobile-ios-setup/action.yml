@@ -37,6 +37,9 @@ runs:
     - shell: bash
       run: cd shruti/modules/apps/mobile && npm ci
 
+    - shell: bash
+      run: ./scripts/apply-branding.sh
+
     - uses: actions/download-artifact@v5
       with:
         name: mobile-web-dist
