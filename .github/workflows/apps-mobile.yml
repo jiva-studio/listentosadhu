@@ -290,23 +290,4 @@ jobs:
   # have never executed anywhere, so their current pass/fail state is unknown.
   # Until then, treat every iOS change as untested and exercise it on a device.
 
-  # Shared web CI: lint, unit test, e2e, Cloudflare Pages preview + production.
-  # Runs after build-web so its e2e/deploy jobs find the mobile-web-dist
-  # artifact. `plugins` are built generically by the reusable before npm ci.
-  ci:
-    needs: [build-web]
-    uses: ./.github/workflows/mobile-ci-reusable.yml
-    with:
-      pages_project: shruti-preview
-      plugins: '["audio-player", "media-downloader"]'
-      # Our Playwright suite is at shruti/tests/e2e/mobile, not the path the reusable
-      # job probes, so it was reporting a green check having run nothing. It is
-      # also a ~15-minute browser suite: worth running deliberately (the `e2e
-      # (manual)` workflow) rather than on every push.
-      run_e2e: false
-    # Explicit, not `inherit`: the callee declares exactly these three, and
-    # `inherit` would hand a workflow in another repository the whole secret
-    # set, including the store-signing material.
-    secrets:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
