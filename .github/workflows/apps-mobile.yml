@@ -37,6 +37,8 @@ concurrency:
 
 permissions:
   contents: read
+  pull-requests: write
+  deployments: write
 
 jobs:
   # build-web stays app-local: it bakes app-specific compile-time config into

@@ -95,7 +95,7 @@ jobs:
   # app commits shruti/modules/shruti/tests/e2e/.
   e2e:
     name: test / e2e
-    if: ${{ inputs.run_e2e }}
+    if: inputs.run_e2e
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
