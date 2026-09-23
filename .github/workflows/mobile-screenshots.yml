@@ -180,7 +180,7 @@ jobs:
 
       - name: upload framed PNGs as artifact
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v5
         with:
           name: store-screenshots-${{ matrix.platform }}
           path: shruti/modules/tools/screenshots/out/framed/
