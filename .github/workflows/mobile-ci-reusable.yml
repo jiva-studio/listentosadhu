@@ -172,7 +172,7 @@ jobs:
           name: mobile-web-dist
           path: dist
       - id: deploy
-        if: env.CF_API_TOKEN != '' && env.CF_ACCOUNT_ID != ''
+        if: secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != ''
         env:
           CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -208,7 +208,7 @@ jobs:
           name: mobile-web-dist
           path: dist
       - id: deploy
-        if: env.CF_API_TOKEN != '' && env.CF_ACCOUNT_ID != ''
+        if: secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != ''
         env:
           CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
