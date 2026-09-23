@@ -57,7 +57,7 @@ jobs:
       # mobile-android-setup action downloads exactly that artifact name into
       # shruti/modules/apps/mobile/dist. This run only ever produces the off-store
       # bundle, so reusing the name is safe and lets the setup action place it.
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v5
         with:
           name: mobile-web-dist
           path: shruti/modules/apps/mobile/dist
@@ -120,7 +120,7 @@ jobs:
             -o /dev/null -w "purge HTTP %{http_code}\n"
           echo "Published: https://cdn.shruti.local/public/app/shruti.apk"
       # Keep a copy on the run too, for QA / rollback.
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: offstore-apk
