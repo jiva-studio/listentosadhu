@@ -44,15 +44,82 @@ def main():
             "hi": "Listen to Sadhu",
             "bn": "Listen to Sadhu",
         }
+
         for lang, brand_name in brand_names.items():
-            app_ts_path = os.path.join(locales_dir, lang, "app.ts")
-            if os.path.exists(app_ts_path):
-                with open(app_ts_path, "r", encoding="utf-8") as f:
+            lang_dir = os.path.join(locales_dir, lang)
+            if not os.path.exists(lang_dir):
+                continue
+
+            # app.ts
+            app_ts = os.path.join(lang_dir, "app.ts")
+            if os.path.exists(app_ts):
+                with open(app_ts, "r", encoding="utf-8") as f:
                     content = f.read()
-                new_content = re.sub(r'(\bname:\s*["\'`])[^"\'`]+(["\'`])', rf'\g<1>{brand_name}\g<2>', content)
-                with open(app_ts_path, "w", encoding="utf-8") as f:
-                    f.write(new_content)
-                print(f"Set app.name for {lang} -> {brand_name}")
+                content = re.sub(r'(\bname:\s*["\'`])[^"\'`]+(["\'`])', rf'\g<1>{brand_name}\g<2>', content)
+                with open(app_ts, "w", encoding="utf-8") as f:
+                    f.write(content)
+
+            # onboarding.ts
+            onboarding_ts = os.path.join(lang_dir, "onboarding.ts")
+            if os.path.exists(onboarding_ts):
+                with open(onboarding_ts, "r", encoding="utf-8") as f:
+                    content = f.read()
+                content = re.sub(r'(\bappName:\s*["\'`])[^"\'`]+(["\'`])', rf'\g<1>{brand_name}\g<2>', content)
+                with open(onboarding_ts, "w", encoding="utf-8") as f:
+                    f.write(content)
+
+            # settings.ts
+            settings_ts = os.path.join(lang_dir, "settings.ts")
+            if os.path.exists(settings_ts):
+                with open(settings_ts, "r", encoding="utf-8") as f:
+                    content = f.read()
+                if lang == "ru":
+                    content = content.replace("«Shruti»", f"«{brand_name}»")
+                elif lang == "uk":
+                    content = content.replace("«Shruti»", f"«{brand_name}»")
+                elif lang in ("sr-Cyrl", "sr-Latn"):
+                    content = content.replace("„Shruti“", f"„{brand_name}“")
+                else:
+                    content = content.replace('"Shruti"', f'"{brand_name}"').replace("'Shruti'", f"'{brand_name}'")
+                with open(settings_ts, "w", encoding="utf-8") as f:
+                    f.write(content)
+
+            # home.ts
+            home_ts = os.path.join(lang_dir, "home.ts")
+            if os.path.exists(home_ts):
+                with open(home_ts, "r", encoding="utf-8") as f:
+                    content = f.read()
+                if lang == "ru":
+                    content = content.replace("«Shruti»", f"«{brand_name}»")
+                elif lang == "uk":
+                    content = content.replace("«Shruti»", f"«{brand_name}»")
+                elif lang in ("sr-Cyrl", "sr-Latn"):
+                    content = content.replace("Shruti", brand_name)
+                else:
+                    content = content.replace("Shruti", brand_name)
+                with open(home_ts, "w", encoding="utf-8") as f:
+                    f.write(content)
+
+            # chat.ts
+            chat_ts = os.path.join(lang_dir, "chat.ts")
+            if os.path.exists(chat_ts):
+                with open(chat_ts, "r", encoding="utf-8") as f:
+                    content = f.read()
+                if lang == "ru":
+                    content = content.replace("«Shruti Pro»", f"«{brand_name} Pro»")
+                    content = content.replace('"Shruti Pro"', f'"{brand_name} Pro"')
+                    content = content.replace("Обновите Shruti", f"Обновите {brand_name}")
+                elif lang == "uk":
+                    content = content.replace("«Shruti Pro»", f"«{brand_name} Pro»")
+                    content = content.replace('"Shruti Pro"', f'"{brand_name} Pro"')
+                    content = content.replace("Оновіть Shruti", f"Оновіть {brand_name}")
+                else:
+                    content = content.replace("Shruti Pro", f"{brand_name} Pro")
+                    content = content.replace("Shruti", brand_name)
+                with open(chat_ts, "w", encoding="utf-8") as f:
+                    f.write(content)
+
+            print(f"Set branding for {lang} -> {brand_name}")
 
     print("=== Branding overlay applied successfully ===")
 
