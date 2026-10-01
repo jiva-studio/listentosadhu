@@ -150,6 +150,8 @@ jobs:
           APP_ID: ${{ inputs.app_id }}
           APPLICATION_ID: ${{ inputs.app_id }}
           ANDROID_PACKAGE_NAME: ${{ inputs.app_id }}
+          CDN_URL: ${{ vars.DB_CDN_URL }}
+          DB_ARTIFACT_NAME: ${{ vars.DB_ARTIFACT_NAME }}
         run: cd shruti/modules/apps/mobile && bundle exec fastlane android build_all
       - uses: actions/upload-artifact@v5
         with:
@@ -240,6 +242,8 @@ jobs:
           APP_ID: ${{ inputs.app_id }}
           IOS_BUNDLE_ID: ${{ inputs.app_id }}
           APPLE_PROVISIONING_PROFILE_NAME: ${{ inputs.apple_provisioning_profile_name }}
+          CDN_URL: ${{ vars.DB_CDN_URL }}
+          DB_ARTIFACT_NAME: ${{ vars.DB_ARTIFACT_NAME }}
         run: cd shruti/modules/apps/mobile && bundle exec fastlane ios build
       - if: steps.check_ios.outputs.present == 'true'
         uses: actions/upload-artifact@v5
